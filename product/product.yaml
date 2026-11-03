@@ -1,0 +1,11 @@
+_ > nanoagent.plugin.v0001.ProductConfig:
+tagline: "Corrupted JSON in, strict JSON out, checked value by value against the original"
+summary: "A repair task for agents. Each case is a real-looking JSON document, an app config, a product catalog or an API response, broken the ways people and programs break JSON: trailing commas, single quotes, unquoted keys, missing commas, comments, Python's True and None, NaN, and a missing final brace. The agent must fix the syntax and nothing else. The verifier parses the repair strictly, refusing NaN and repeated keys, and compares it with the original with strict types, so 1 is not 1.0, true is not 1, and null is not \"null\"."
+highlights:
+  - "28 frozen cases from 13 synthetic documents: single corruptions, combinations of two to four, and traps"
+  - "Traps where a careless find-and-replace fails: 'True' inside a string, // inside a URL, apostrophes in single-quoted text"
+  - "Fully offline and deterministic: a pure-code verifier names the JSON path of the first difference"
+steps:
+  - "Pick a case, such as trap-true-in-string or combo-four-kinds"
+  - "The agent reads the broken text, writes a repair, and checks it with the strict JSON checker"
+  - "See the repaired JSON and every check of the verdict"

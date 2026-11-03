@@ -1,0 +1,25 @@
+/* Styles for this plugin's renderers (renderers.js), over the kit's (kit/kit.css). They apply
+   only inside each renderer's output, in its own shadow root. Use the kit's variables
+   (var(--accent), var(--surface), var(--radius), ...) so they follow the host's light and dark
+   themes. */
+.heading {
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+.difference {
+  margin: 0 0 0.5rem;
+  color: var(--accent, #3b6fd8);
+  overflow-wrap: anywhere;
+}
+.json {
+  margin: 0;
+  padding: 0.75rem;
+  max-height: 28rem;
+  overflow: auto;
+  border: 1px solid var(--border, #8884);
+  border-radius: var(--radius, 6px);
+  background: var(--surface, transparent);
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

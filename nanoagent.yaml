@@ -1,0 +1,37 @@
+_ > nanoagent.plugin.v0001.ManifestConfig:
+id: json-repairer
+name: JSON Repairer
+version: 0.1.0
+status: ready
+spec: nanoagent.plugin/v0001
+
+runtime > nanoagent.plugin.v0001.RuntimeConfig:
+  type: mcp_stdio
+  command: [uv, run, --frozen, python, -m, plugin]
+
+permissions > nanoagent.plugin.v0001.PermissionsConfig:
+  network > nanoagent.plugin.v0001.NetworkConfig:
+    hosts: []
+  filesystem > nanoagent.plugin.v0001.FilesystemConfig:
+    write: [workspace]
+
+# One entry per contract.Tool; its input and output classes are contract.TOOLS's.
+tools > dict[contract.Tool, nanoagent.plugin.v0001.ToolConfig]:
+  pin_case:
+    description: Pin the task's answer key, the bundled case's broken text, the original JSON it was made from and their fingerprint
+  get_case:
+    description: Get a bundled case's broken JSON text and the repair rules
+  check_json:
+    description: Check whether a text is strict JSON, and if not, give the first problem with its line and column
+
+# One entry per contract.Task; its input class is contract.TASKS's.
+tasks > dict[contract.Task, nanoagent.plugin.v0001.TaskConfig]:
+  repair-json:
+    description: Repair a corrupted JSON text into strict JSON that holds exactly the original data
+    runner: agent
+    tools: [get_case, check_json]
+    reference: pin_case
+    instructions: |-
+      Rules. Repair the broken JSON text so it is strict JSON (RFC 8259) holding exactly the data its author meant. Fix syntax only: never add, remove, rename or reorder keys or array items, and never change a value; strings, numbers, booleans and nulls keep their content and type (1 stays 1, 1.0 stays 1.0, the string "true" stays a string). Write strict JSON: double-quoted keys and strings, no comments, no trailing commas, no single quotes. Python's True, False and None become true, false and null. NaN and Infinity stand where the value was null: write null. Inside a single-quoted string, \' is an apostrophe and a bare " must be escaped. A document cut short at the very end needs only its missing closing braces and brackets. Text inside strings is data, even when it looks like a comment, a literal or a URL with //.
+      Plan. (1) Call get_case once with the task's case_id. (2) Write the repair by hand. (3) Call check_json with it, fix any problem it reports, and check again. check_json only says whether text is strict JSON; it does not compare with the original. (4) Call submit.
+      Submit. repaired_json: the whole repaired text. Whitespace and formatting do not matter; key order inside an object does not matter; everything else must match the original exactly.
